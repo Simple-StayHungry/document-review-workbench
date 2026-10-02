@@ -9,10 +9,19 @@ A local workbench for bond underwriting document review, discrepancy detection a
 ## Preview
 
 <p align="center"><img src="docs/ui-overview.svg" width="100%" alt="Interface overview"></p>
+
+<sub>The overview is schematic; the screenshots below use synthetic demo data only and contain no real business materials.</sub>
+
 <p align="center">
   <img src="docs/ui-materials.png" width="49%" alt="Materials import interface">
   <img src="docs/ui-export.png" width="49%" alt="Tracked-change export interface">
 </p>
+
+**Engineering:** direct OOXML processing · tracked changes · human-in-the-loop
+
+## Validation
+
+`282 passed` · zero third-party runtime dependencies
 
 ## Run locally
 
@@ -21,3 +30,5 @@ A local workbench for bond underwriting document review, discrepancy detection a
 - Linux: `./start_linux.sh`
 
 <sub>Public portfolio edition. No real client documents, production data or internal materials are included.</sub>
+
+[Technical notes →](docs/technical-notes.md)
