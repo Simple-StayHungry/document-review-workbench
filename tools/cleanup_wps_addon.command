@@ -1,6 +1,9 @@
 #!/bin/bash
+# Maintenance helper, only relevant if you previously ran an older build of this
+# workbench that installed a WPS add-in. Current builds install nothing into Office:
+# exported DOCX files use ordinary Word/WPS tracked changes. Safe to ignore otherwise.
 set -e
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 PY="$(command -v python3 || true)"
 if [ -z "$PY" ]; then
   echo "未找到 Python 3。"

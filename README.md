@@ -55,7 +55,7 @@ flowchart TD
 | 层 | 实现 |
 |---|---|
 | 运行时 | **Python 3.10+，零第三方依赖**（只用标准库） |
-| 服务层 | 基于 Python 标准库构建的轻量本地 HTTP 服务，支持并发任务处理；只监听本机回环地址 |
+| 服务层 | 基于 Python 标准库构建的轻量本地 HTTP 服务，支持并发任务处理；面向内网环境设计，无需外部服务依赖 |
 | 文档层 | 自研 OOXML 处理层（`zipfile` + `xml`）—— **不使用 python-docx** |
 | 前端 | 原生 HTML / CSS / JavaScript，无框架、无构建步骤 |
 | 测试 | `pytest`（开发期依赖，非运行时依赖） |
@@ -114,7 +114,10 @@ workbench/
   layout_policy.py         版式策略
 tests/                     回归测试
 web/                       前端（原生 JS）
-tools/public_release_check.py   公开版脱敏自检
+docs/                      界面截图
+tools/
+  public_release_check.py  公开版脱敏自检
+  cleanup_wps_addon.command  维护脚本：仅用于清理早期版本可能装过的 WPS 加载项
 ```
 
 ## 数据安全
