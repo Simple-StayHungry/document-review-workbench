@@ -55,7 +55,7 @@ flowchart TD
 | 层 | 实现 |
 |---|---|
 | 运行时 | **Python 3.10+，零第三方依赖**（只用标准库） |
-| 后端 | `http.server` ThreadingHTTPServer + `concurrent.futures` |
+| 服务层 | 基于 Python 标准库构建的轻量本地 HTTP 服务，支持并发任务处理；只监听本机回环地址 |
 | 文档层 | 自研 OOXML 处理层（`zipfile` + `xml`）—— **不使用 python-docx** |
 | 前端 | 原生 HTML / CSS / JavaScript，无框架、无构建步骤 |
 | 测试 | `pytest`（开发期依赖，非运行时依赖） |
