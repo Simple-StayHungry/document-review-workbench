@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light"><title>核查工作台</title><link rel="stylesheet" href="/style.css">
+</head>
+<body data-step="import">
+<div class="shell">
+  <aside class="sidebar">
+    <a href="/" class="brand"><span class="brand-mark">核</span><span>核查工作台</span></a>
+    <button id="newProject" class="new-project">新建项目</button>
+    <div class="sidebar-label">项目</div><nav id="projects" aria-label="项目列表"></nav>
+    <div class="sidebar-bottom"><span class="local-dot"></span>本地运行</div>
+  </aside>
+  <main>
+    <header class="topbar">
+      <div class="topbar-left"><button id="toggleSidebar" class="menu-button" aria-label="打开项目列表" aria-expanded="false">☰</button><div class="breadcrumb"><button id="projectName" title="点击修改项目名">新项目</button></div></div>
+      <nav class="workflow" aria-label="工作步骤"><button class="step active" data-step="import">材料</button><button class="step" data-step="review">核对</button><button class="step" data-step="export">导出</button></nav>
+    </header>
+    <div class="content">
+      <div id="jobBox" class="job-box hidden" role="status" aria-live="polite"><div class="job-top"><span id="jobText">正在读取材料</span><span id="jobPercent">0%</span><button id="cancelJob" class="text-button small hidden">停止</button></div><div class="progress-track"><div id="jobBar"></div></div></div>
+      <div id="errorBox" class="error-box hidden" role="alert"><div id="errorText"></div><button id="dismissError" class="text-button">关闭</button></div>
+
+      <section id="importPanel" class="panel">
+        <div class="import-intro">
+          <div class="eyebrow">文档核查工作区</div>
+          <h1>导入材料，开始核查。</h1>
+          <p>导入待更新稿、当前募集说明书和核查意见。对应内容从正式来源实际复制粘贴，内容相同也留删除与插入修订；同科目新增内容留插入修订，没有对应的保留原文。</p>
+        </div>
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="上传核查材料">
+          <div class="drop-main">
+            <h2>把材料放在这里</h2>
+            <p>支持 DOCX、ZIP 和整个文件夹，可一次导入旧核查稿、最新版募集说明书、核查意见及相关依据。</p>
+            <div class="upload-meta" aria-hidden="true"><span>自动识别材料</span><span>无对应保留原文</span><span>对应内容整块复制</span></div>
+          </div>
+          <div class="upload-actions"><button id="pickFiles" class="primary">选择文件</button><button id="pickFolder" class="secondary">选择文件夹</button></div>
+          <input id="fileInput" type="file" multiple accept=".docx,.zip,.pdf" hidden><input id="folderInput" type="file" webkitdirectory multiple hidden>
+        </div>
+        <div id="materialsSection" class="hidden">
+          <div class="section-head"><div><h2>材料</h2><p id="materialSummary"></p></div></div>
+          <div class="file-toolbar"><input id="fileSearch" type="search" placeholder="搜索材料" aria-label="搜索材料"><label><input id="showOtherFiles" type="checkbox">显示其他材料</label></div>
+          <div id="filesList" class="files-list"></div>
+          <div class="settings-card"><div class="section-head compact"><div><h2>核查设置</h2></div></div>
+            <div class="form-grid"><label class="wide">目标发行人<input id="issuer" placeholder="自动识别"></label><label>修订作者<input id="author" value="柒"></label><label>修订日期<input id="date" type="date"></label></div>
+            <details class="more-settings"><summary>更多设置</summary><div class="form-grid"><label class="wide">债券名称<input id="bond" placeholder="自动识别"></label><label class="wide">报告期<input id="period" placeholder="留空不改"></label></div><label class="check-label"><input id="allow_unknown_source" type="checkbox">允许使用未识别发行人的来源</label></details>
+          </div>
+          <div class="action-footer"><button id="analyzeBtn" class="primary">开始核查</button></div>
+        </div>
+      </section>
+
+      <section id="reviewPanel" class="panel hidden">
+        <div id="reviewEmpty" class="empty-card"><h2>尚未分析</h2><p>先在“材料”中导入并开始核查。</p></div>
+        <div id="reviewContent" class="hidden">
+          <div class="review-head">
+            <div class="review-title"><span class="review-kicker">逐项核对</span><h1>确认文件将发生的变化</h1><p id="reviewProgress">等待核查结果</p></div>
+            <div id="reviewChapter" class="review-chapter hidden" aria-live="polite"></div>
+            <div class="review-head-actions"><button id="undoBtn" class="text-button" title="撤销" disabled>撤销</button><button id="redoBtn" class="text-button" title="重做" disabled>重做</button></div>
+          </div>
+          <div id="reviewWarnings"></div>
+          <div class="review-workspace"><aside class="change-index"><div class="index-caption" id="indexCaption"></div><div id="changeList"></div></aside><article id="changeDetail" class="change-detail"><div class="empty-selection">选择一项，查看处理前和处理后。</div></article></div>
+        </div>
+      </section>
+
+      <section id="exportPanel" class="panel hidden"><div id="exportEmpty" class="empty-card"><h2>尚无可导出内容</h2><p>完成分析后即可生成修订稿。</p></div><div id="exportContent" class="hidden"></div></section>
+    </div>
+  </main>
+</div>
+<div id="toast" class="toast hidden" role="status"></div>
+<dialog id="modal"><div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="secondary small">关闭</button></div><div id="modalBody"></div></dialog>
+<script src="/app.js"></script>
+</body></html>
