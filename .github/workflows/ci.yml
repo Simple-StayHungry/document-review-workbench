@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependency
+        run: python -m pip install --upgrade pip -r requirements-dev.txt
+
+      - name: Assert zero runtime dependencies
+        run: |
+          python - <<'PY'
+          import pathlib, re, sys
+          third_party = {"docx", "lxml", "numpy", "pandas", "requests", "fastapi", "flask", "django"}
+          hits = []
+          for f in pathlib.Path(".").rglob("*.py"):
+              if ".git" in f.parts:
+                  continue
+              for line in f.read_text(encoding="utf-8", errors="ignore").splitlines():
+                  m = re.match(r"\s*(?:import|from)\s+([A-Za-z_][\w]*)", line)
+                  if m and m.group(1).lower() in third_party:
+                      hits.append(f"{f}: {line.strip()}")
+          if hits:
+              print("\n".join(hits))
+              sys.exit("runtime must stay dependency-free")
+          print("ok: no third-party runtime imports")
+          PY
+
+      - name: Run regression suite
+        run: python -m pytest -q
+
+      - name: Public release scan
+        run: python tools/public_release_check.py
