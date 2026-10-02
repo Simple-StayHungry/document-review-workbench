@@ -1,36 +1,38 @@
 # Document Review Workbench
 
-**债券业务核查分析文件自动化工作台**
+## 债券业务核查分析文件自动化工作台
 
-> An automation workbench designed for bond underwriting document review workflows.
-> It supports structured comparison, discrepancy detection, tracked-change generation and
-> human-in-the-loop verification for compliance and review documents.
+> An automation workbench for bond underwriting document review: structured comparison,
+> discrepancy detection, tracked-change generation and human-in-the-loop verification.
 
-面向债券承销业务的核查分析文件自动化工作台。解决债券项目中**募集说明书、核查意见及分析文件**
-在人工比对、定位、更新和修订环节耗时且易错的问题。
+把债券项目中**募集说明书、核查意见及分析文件**的比对、定位、更新和修订工作做成一条可复核的流水线。
+这类文件动辄上百个事项，更新稿一来定位全部重做，且改动必须留下可追溯的修订痕迹、不能覆盖原文 ——
+人工做既慢又难复核。本工作台把「解析 → 匹配 → 差异识别 → 修订生成 → 人工确认 → 导出审计」固化下来：
+**能自动判定的直接生成修订，判不了的进入人工队列**，人工未确认的内容零写入。
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Dependencies](https://img.shields.io/badge/runtime%20dependencies-zero-2ea44f)
+![OOXML](https://img.shields.io/badge/OOXML-document%20processing-0969da)
 ![Tests](https://img.shields.io/badge/regression%20tests-282%20passed-2ea44f)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
 
 ---
 
-## 这个项目解决什么问题
+## 界面
 
-债券项目里的核查分析文件，本质上是把**源文档**（募集说明书及其更新稿）的内容，
-按章节和内容角色，逐条搬进**目标文档**（核查意见、分析文件），并保持 Word 的样式、编号、
-交叉引用和修订痕迹。
+![核查工作台启动界面](docs/ui-overview.png)
 
-人工做这件事的代价在于：
+<sub>启动界面 · 材料导入。导入待更新稿、募集说明书与核查意见后解锁「核对」与「导出」两栏。</sub>
 
-- 一份文件动辄上百个事项，逐条比对、定位、复制、改格式；
-- 更新稿一来，之前做过的定位全部要重做一遍；
-- 改动必须留下**可追溯的修订痕迹**，不能直接覆盖原文；
-- 出错代价高，而"看一遍"这种复核方式并不可靠。
+## 核心能力
 
-本工作台把「解析 → 匹配 → 差异识别 → 修订生成 → 人工确认 → 导出审计」做成一条可复核的流水线：
-**能自动判定的直接生成修订，判不了的进入人工队列**，且人工确认的结果不会被程序自动写入文档。
+| 能力 | 说明 |
+|---|---|
+| **文档结构解析** | 直接读写 OOXML：章节层级、段落、表格、书签、图注、Word 原生公式，不依赖任何第三方 Office 库 |
+| **内容来源匹配** | 按章节路径与内容角色建立源文档到目标文档的对应关系，支持一对多与缺失事项 |
+| **差异自动识别** | 识别内容差异、缺失事项与来源新增，并按"可自动判定程度"分流 |
+| **Word 修订模式生成** | 输出真正的 tracked changes（`w:ins` / `w:del`），保留原文档样式、编号与版式 |
+| **人工复核与导出审计** | 不确定事项进入复核队列，**未确认零写入**；交付前对输出文件独立校验 |
 
 ## 处理流程
 
@@ -48,19 +50,7 @@ flowchart TD
     I --> J["交付"]
 ```
 
-## 核心能力
-
-| 能力 | 说明 |
-|---|---|
-| **文档结构解析** | 直接读写 OOXML：章节层级、段落、表格、书签、图注、Word 原生公式，不依赖任何第三方 Office 库 |
-| **内容来源匹配** | 按章节路径与内容角色建立源文档到目标文档的对应关系，支持一对多与缺失事项 |
-| **差异自动识别** | 识别内容差异、缺失事项、来源新增，按可判定程度分流 |
-| **Word 修订模式生成** | 输出真正的 tracked changes（`w:ins` / `w:del`），保留原文档样式、编号与版式 |
-| **人工确认工作流** | 不确定事项进入复核队列；**未确认的内容零写入**，误识别止步于 UI 层 |
-| **导出前独立审计** | 交付前对输出文件做独立校验，导出结果与审计结论分离 |
-| **版式保持与回归** | 布局策略 + golden layout 回归，防止修订引入版式漂移 |
-
-## 技术栈
+## 技术实现
 
 | 层 | 实现 |
 |---|---|
@@ -71,7 +61,8 @@ flowchart TD
 | 测试 | `pytest`（开发期依赖，非运行时依赖） |
 
 设计取向上刻意选择"零运行时依赖"：这是要被券商内网、离线机器、以及不愿装环境的人
-双击就能跑起来的工具，装不上依赖就等于不可用。
+双击就能跑起来的工具，装不上依赖就等于不可用。CI 里有一条硬约束 ——
+出现任何第三方运行时 import 就直接 fail。
 
 ## 测试与质量基线
 
@@ -104,7 +95,7 @@ python start.py
 | Windows | `start_windows.bat` |
 | Linux | `start_linux.sh` |
 
-服务只监听本机回环地址，文档不会离开这台机器。
+服务只监听本机回环地址（`127.0.0.1`，端口 8766 起），文档不会离开这台机器。
 
 ## 项目结构
 
